@@ -1,0 +1,66 @@
+\sql
+\connect
+\connect root@localhost
+
+#UC1
+CREATE DATABASE address_book_service; 		
+USE address_book_service; 			
+SELECT DATABASE(); 
+
+#UC2
+CREATE TABLE address_book   			
+(
+ first_name 	VARCHAR(50) NOT NULL,
+ last_name 	VARCHAR(50) NOT NULL,
+ address 	VARCHAR(100) NOT NULL,
+ city 		VARCHAR(50) NOT NULL,
+ state 		VARCHAR(50) NOT NULL,
+ zip 		VARCHAR(10) NOT NULL,
+ phone 		VARCHAR(15) NOT NULL,
+ email 		VARCHAR(100) NOT NULL
+);
+DESCRIBE address_book;
+
+#UC3
+INSERT INTO address_book VALUES  		
+	( 'shubham', 'bhawsar', 'lisbon', 'lisboncity', 'portugal', '123456', '91 9876543210', 'shubh@email.com' ),
+	( 'anant', 'mk', 'pune', 'punecity','mh', '128557', '91 9772443222', 'anant@email.com'),
+	( 'tanmay', 'bhatt', 'lucknow', 'lucknowcity', 'up', '0253457', '91 8876525510', 'tanmay@email.com' );
+
+#UC4
+UPDATE address_book 			
+SET zip = '145236' 
+WHERE first_name = 'anant' && last_name = 'mk';
+
+#UC5
+DELETE FROM address_book 	
+WHERE first_name = 'tanmay';
+
+#UC6
+SELECT * FROM address_book 		
+WHERE city = 'lisboncity';
+SELECT * FROM address_book 	
+WHERE state = 'mh';
+
+#UC7 
+SELECT city,COUNT(city) FROM address_book GROUP BY city; 	
+SELECT state,COUNT(state) FROM address_book GROUP BY state; 	
+
+#UC8	
+INSERT INTO address_book VALUES  		
+	( 'rachit', 'shukla', 'Street 2', 'City 2','California', '123457', '9876543222', 'rachit@email.com'),
+	( 'aditya', 'barot', 'Street 2', 'City 2','California', '123457', '9876543220', 'aditya@email.com'),
+	( 'qasim', 'khan', 'Street 5', 'City 2','California', '123459', '9876543229', 'quasim@email.com');
+SELECT * FROM address_book WHERE city = 'City 2'
+ORDER BY first_name;
+
+#UC9
+ALTER TABLE address_book ADD name VARCHAR(20);
+ALTER TABLE address_book ADD type VARCHAR(20) DEFAULT 'colleague';
+
+#UC10
+SELECT COUNT(type) FROM address_book;
+
+#UC11
+INSERT INTO address_book VALUES   
+	( 'Taruna', 'gyaneswar', 'Street 2', 'City 2','California', '123457', '9876543222', 'Taruna@email.com',NULL,'Family');
