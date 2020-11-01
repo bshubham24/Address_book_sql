@@ -1,0 +1,394 @@
+
+
+Copyright (c) 2016, 2020, Oracle and/or its affiliates.
+Oracle is a registered trademark of Oracle Corporation and/or its affiliates.
+Other names may be trademarks of their respective owners.
+
+Type '\help' or '\?' for help; '\quit' to exit.
+ MySQL  JS > \sql
+Switching to SQL mode... Commands end with ;
+ MySQL  SQL > \connect
+\connect [--mx|--mysqlx|--mc|--mysql] <URI>
+ MySQL  SQL > \connect root@localhost
+Creating a session to 'root@localhost'
+Fetching schema names for autocompletion... Press ^C to stop.
+Your MySQL connection id is 30 (X protocol)
+Server version: 8.0.22 MySQL Community Server - GPL
+No default schema selected; type \use <schema> to set one.
+ MySQL  localhost:33060+ ssl  SQL > show databases;
++----------------------+
+| Database             |
++----------------------+
+| address_book_service |
+| information_schema   |
+| mysql                |
+| payroll_service      |
+| performance_schema   |
+| sakila               |
+| sys                  |
+| world                |
++----------------------+
+8 rows in set (0.0008 sec)
+ MySQL  localhost:33060+ ssl  SQL > use address_book_service;
+Default schema set to `address_book_service`.
+Fetching table and column names from `address_book_service` for auto-completion... Press ^C to stop.
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > describe address_book;
++------------+--------------+------+-----+-----------+-------+
+| Field      | Type         | Null | Key | Default   | Extra |
++------------+--------------+------+-----+-----------+-------+
+| first_name | varchar(50)  | NO   |     | NULL      |       |
+| last_name  | varchar(50)  | NO   |     | NULL      |       |
+| address    | varchar(100) | NO   |     | NULL      |       |
+| city       | varchar(50)  | NO   |     | NULL      |       |
+| state      | varchar(50)  | NO   |     | NULL      |       |
+| zip        | varchar(20)  | NO   |     | NULL      |       |
+| phone      | varchar(30)  | NO   |     | NULL      |       |
+| email      | varchar(100) | NO   |     | NULL      |       |
+| name       | varchar(20)  | YES  |     | NULL      |       |
+| type       | varchar(20)  | YES  |     | colleague |       |
++------------+--------------+------+-----+-----------+-------+
+10 rows in set (0.0019 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > CREATE TABLE user_info(
+                                                       -> user_id INT PRIMARY KEY,
+                                                       -> first_name VARCHAR(50) NOT NULL,
+                                                       -> last_name VARCHAR(50) NOT NULL);
+Query OK, 0 rows affected (2.0293 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > describe user_info;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| user_id    | int         | NO   | PRI | NULL    |       |
+| first_name | varchar(50) | NO   |     | NULL    |       |
+| last_name  | varchar(50) | NO   |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+3 rows in set (0.0020 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO user_info VALUES
+                                                       -> (1, 'Bill', 'Smith'),
+                                                       -> (2, 'Terisa', 'Brown'),
+                                                       -> (3, 'Charlie', 'Williams');
+Query OK, 3 rows affected (0.1391 sec)
+
+Records: 3  Duplicates: 0  Warnings: 0
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > select * from user_info
+                                                       -> ;
++---------+------------+-----------+
+| user_id | first_name | last_name |
++---------+------------+-----------+
+|       1 | Bill       | Smith     |
+|       2 | Terisa     | Brown     |
+|       3 | Charlie    | Williams  |
++---------+------------+-----------+
+
+
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > CREATE TABLE address(
+                                                       -> user_id INT PRIMARY KEY,
+                                                       -> address VARCHAR(50) NOT NULL,
+                                                       -> city VARCHAR(50) NOT NULL,
+                                                       -> state VARCHAR(50) NOT NULL,
+                                                       -> zip VARCHAR(10) NOT NULL
+                                                       -> );
+Query OK, 0 rows affected (1.2953 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > ALTER TABLE address ADD FOREIGN KEY(user_id) REFERENCES
+                                                       -> user_info(user_id);
+Query OK, 0 rows affected (2.8326 sec)
+
+Records: 0  Duplicates: 0  Warnings: 0
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > describe address;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| user_id | int         | NO   | PRI | NULL    |       |
+| address | varchar(50) | NO   |     | NULL    |       |
+| city    | varchar(50) | NO   |     | NULL    |       |
+| state   | varchar(50) | NO   |     | NULL    |       |
+| zip     | varchar(10) | NO   |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+5 rows in set (0.0234 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > CREATE TABLE contact
+                                                       -> (
+                                                       -> user_id INT,
+                                                       -> phone VARCHAR(30),
+                                                       -> email VARCHAR(40),
+                                                       -> FOREIGN KEY(user_id) REFERENCES user_info(user_id));
+Query OK, 0 rows affected (1.4162 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > describe contact;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| user_id | int         | YES  | MUL | NULL    |       |
+| phone   | varchar(30) | YES  |     | NULL    |       |
+| email   | varchar(40) | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+3 rows in set (0.0335 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > CREATE TABLE contact_type(
+                                                       -> type_id INT,
+                                                       -> type_of_contact VARCHAR(20)
+                                                       -> );
+Query OK, 0 rows affected (1.2133 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > ALTER TABLE contact_type ADD PRIMARY KEY(type_id);
+Query OK, 0 rows affected (2.7560 sec)
+
+Records: 0  Duplicates: 0  Warnings: 0
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > describe contact_type;
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| type_id         | int         | NO   | PRI | NULL    |       |
+| type_of_contact | varchar(20) | YES  |     | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+2 rows in set (0.0159 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > CREATE TABLE user_contact_type_link
+                                                       -> (
+                                                       ->  user_id INT,
+                                                       ->  type_id INT,
+                                                       ->  FOREIGN KEY(user_id) REFERENCES user_details(user_id),
+                                                       ->  FOREIGN KEY(type_id) REFERENCES contact_type(type_id)
+                                                       -> );
+ERROR: 1824: Failed to open the referenced table 'user_details'
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > CREATE TABLE user_contact_type_link
+                                                       -> (
+                                                       ->  user_id INT,
+                                                       ->  type_id INT,
+                                                       ->  FOREIGN KEY(user_id) REFERENCES user_details(user_id),
+                                                       ->  FOREIGN KEY(type_id) REFERENCES contact_type(type_id)
+                                                       -> );
+ERROR: 1824: Failed to open the referenced table 'user_details'
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO address VALUES
+                                                       -> (1,'Street 1', 'City 1', 'California', '123456'),
+                                                       -> (2,'Street 2', 'City 2','California', '123457'),
+                                                       -> (3,'Street 3', 'City 3', 'Florida', '223457');
+Query OK, 3 rows affected (0.1878 sec)
+
+Records: 3  Duplicates: 0  Warnings: 0
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > select * from address;
++---------+----------+--------+------------+--------+
+| user_id | address  | city   | state      | zip    |
++---------+----------+--------+------------+--------+
+|       1 | Street 1 | City 1 | California | 123456 |
+|       2 | Street 2 | City 2 | California | 123457 |
+|       3 | Street 3 | City 3 | Florida    | 223457 |
++---------+----------+--------+------------+--------+
+3 rows in set (0.0006 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact VALUES
+                                                       -> (1,'9876543210', 'Bill@email.com'),
+                                                       -> (2,'9876543222', 'Terisa@email.com'),
+                                                       -> (3,'8876543210', 'Charlie@email.com');
+Query OK, 3 rows affected (0.2508 sec)
+
+Records: 3  Duplicates: 0  Warnings: 0
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > select * from contact;
++---------+------------+-------------------+
+| user_id | phone      | email             |
++---------+------------+-------------------+
+|       1 | 9876543210 | Bill@email.com    |
+|       2 | 9876543222 | Terisa@email.com  |
+|       3 | 8876543210 | Charlie@email.com |
++---------+------------+-------------------+
+3 rows in set (0.0005 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact_type VALUES
+                                                       ->  (101,'Friend'),
+                                                       ->  (102,'Family');
+Query OK, 2 rows affected (0.1444 sec)
+
+Records: 2  Duplicates: 0  Warnings: 0
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > select * from contact_type;
++---------+-----------------+
+| type_id | type_of_contact |
++---------+-----------------+
+|     101 | Friend          |
+|     102 | Family          |
++---------+-----------------+
+2 rows in set (0.0005 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > ALTER TABLE contact_type ADD user_id INT AFTER type_id;
+Query OK, 0 rows affected (2.2314 sec)
+
+Records: 0  Duplicates: 0  Warnings: 0
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > describe contact_type;
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| type_id         | int         | NO   | PRI | NULL    |       |
+| user_id         | int         | YES  |     | NULL    |       |
+| type_of_contact | varchar(20) | YES  |     | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+3 rows in set (0.0017 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > ALTER TABLE contact_type ADD FOREIGN KEY(user_id)
+                                                       -> REFERENCES user_info(user_id);
+Query OK, 2 rows affected (2.4902 sec)
+
+Records: 2  Duplicates: 0  Warnings: 0
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > describe contact_type;
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| type_id         | int         | NO   | PRI | NULL    |       |
+| user_id         | int         | YES  | MUL | NULL    |       |
+| type_of_contact | varchar(20) | YES  |     | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+3 rows in set (0.0017 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > select * from contact_type;
++---------+---------+-----------------+
+| type_id | user_id | type_of_contact |
++---------+---------+-----------------+
+|     101 |    NULL | Friend          |
+|     102 |    NULL | Family          |
++---------+---------+-----------------+
+2 rows in set (0.0008 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact_type VALUES
+                                                       ->  (101,'Friend'),
+                                                       ->  (102,'2','Family');
+ERROR: 1136: Column count doesn't match value count at row 1
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact_type VALUES
+                                                       ->  (101,1,'Friend'),
+                                                       -> (102,2,'Family');
+ERROR: 1062: Duplicate entry '101' for key 'contact_type.PRIMARY'
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > DELETE FROM contact_type where type_id = 101;
+Query OK, 1 row affected (0.1038 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > DELETE FROM contact_type where type_id = 102;
+Query OK, 1 row affected (0.1118 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > select * from contact_type;
+Empty set (0.0005 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL >  INSERT INTO contact_type VALUES
+                                                       ->                                                        ->  (101,1,'Friend'),
+                                                       ->                                                        -> (102,2,'Family');
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '->  (101,1,'Friend'),
+                                                       -> ' at line 2
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact_type VALUES
+                                                       ->  (101,1,'Friend'),
+                                                       -> (102,2,'Family');
+Query OK, 2 rows affected (0.1926 sec)
+
+Records: 2  Duplicates: 0  Warnings: 0
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > select * from contact_type;
++---------+---------+-----------------+
+| type_id | user_id | type_of_contact |
++---------+---------+-----------------+
+|     101 |       1 | Friend          |
+|     102 |       2 | Family          |
++---------+---------+-----------------+
+2 rows in set (0.0350 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact_type VALUES
+                                                       ->  (101,3,'Friend'),
+                                                       -> ;
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 2
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact_type VALUES
+                                                       ->  (101,3,'Friend');
+ERROR: 1062: Duplicate entry '101' for key 'contact_type.PRIMARY'
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact_type VALUES
+                                                       ->  (103,3'colleague');
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''colleague')' at line 2
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact_type VALUES
+                                                       ->  (101,3,'colleague');
+ERROR: 1062: Duplicate entry '101' for key 'contact_type.PRIMARY'
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT INTO contact_type VALUES
+                                                       ->  (103,3,'colleague');
+Query OK, 1 row affected (0.1430 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > select * from contact_type;
++---------+---------+-----------------+
+| type_id | user_id | type_of_contact |
++---------+---------+-----------------+
+|     101 |       1 | Friend          |
+|     102 |       2 | Family          |
+|     103 |       3 | colleague       |
++---------+---------+-----------------+
+3 rows in set (0.0006 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > SELECT u.first_name,u.last_name,l.state
+                                                       -> from user_info u JOIN address l
+                                                       -> where u.user_id = l.user_id
+                                                       -> AND l.state = 'California';
++------------+-----------+------------+
+| first_name | last_name | state      |
++------------+-----------+------------+
+| Bill       | Smith     | California |
+| Terisa     | Brown     | California |
++------------+-----------+------------+
+2 rows in set (0.0346 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > SELECT city,COUNT(City) FROM address;
++--------+-------------+
+| city   | COUNT(City) |
++--------+-------------+
+| City 1 |           3 |
++--------+-------------+
+1 row in set (0.0007 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > SELECT u.first_name,u.last_name,l.city
+                                                       -> from user_info u JOIN address l
+                                                       -> where u.user_id = l.user_id
+                                                       -> AND l.city = 'City 1'
+                                                       -> ORDER BY u.first_name;
++------------+-----------+--------+
+| first_name | last_name | city   |
++------------+-----------+--------+
+| Bill       | Smith     | City 1 |
++------------+-----------+--------+
+1 row in set (0.0009 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > SELECT u.first_name,u.last_name,l.state
+                                                       -> from user_details u JOIN location l
+                                                       -> where u.user_id = l.user_id
+                                                       -> AND l.state = 'California'
+                                                       -> ORDER BY u.first_name;
+ERROR: 1146: Table 'address_book_service.user_details' doesn't exist
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > SELECT u.first_name,u.last_name,l.city
+                                                       -> from user_info u JOIN address l
+                                                       -> where u.user_id = l.user_id
+                                                       -> AND l.state = 'California'
+                                                       -> ORDER BY u.first_name;
++------------+-----------+--------+
+| first_name | last_name | city   |
++------------+-----------+--------+
+| Bill       | Smith     | City 1 |
+| Terisa     | Brown     | City 2 |
++------------+-----------+--------+                       SELECT u.first_name,u.last_name,l.city from user_info u JOIN address l where u.user_id = l.user_id AND l.state = 'California' ORDER BY u.first_name                     FROM user_details u JOIN contact_type t JOIN user_contact_type_link
+                                                       -> FROM user_details u JOIN contact_type t JOIN user_contact_type_link
+                                                       -> FROM user_details u JOIN contact_type t JOIN user_contact_type_link l
+                                                       ->
+                                                       -> ;
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT u.first_name,u.last_name,l.city from user_info u JOIN address l where u.u' at line 2
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > FROM user_info u JOIN contact_type t_
+                                                       -> WHERE u.user_id = t.user_id
+                                                       -> GROUP BY(t.type_of_contact);
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM user_info u JOIN contact_type t_
+WHERE u.user_id = t.user_id
+GROUP BY(t.typ' at line 1
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > FROM user_info u JOIN contact_type t
+                                                       ->  WHERE u.user_id = t.user_id
+                                                       -> GROUP BY(t.type_of_contact);
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM user_info u JOIN contact_type t
+ WHERE u.user_id = t.user_id
+GROUP BY(t.typ' at line 1
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > SELECT COUNT(u.user_id) AS number_of_contacts,t.type_of_contact
+                                                       -> FROM user_info u JOIN contact_type t
+                                                       -> WHERE u.user_id = t.user_id
+                                                       -> GROUP BY(t.type_of_contact);
++--------------------+-----------------+
+| number_of_contacts | type_of_contact |
++--------------------+-----------------+
+|                  1 | Friend          |
+|                  1 | Family          |
+|                  1 | colleague       |
++--------------------+-----------------+
+3 rows in set (0.0261 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > INSERT into contact_type VALUES(105,1,'colleague');
+Query OK, 1 row affected (0.2752 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL > select * from contact_type;
++---------+---------+-----------------+
+| type_id | user_id | type_of_contact |
++---------+---------+-----------------+
+|     101 |       1 | Friend          |
+|     102 |       2 | Family          |
+|     103 |       3 | colleague       |
+|     105 |       1 | colleague       |
++---------+---------+-----------------+
+4 rows in set (0.0004 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL >  SELECT COUNT(u.user_id) AS number_of_contacts,t.type_of_contact
+                                                       -> FROM user_info u JOIN contact_type t
+                                                       -> WHERE u.user_id = t.user_id
+                                                       -> GROUP BY(t.type_of_contact);
++--------------------+-----------------+
+| number_of_contacts | type_of_contact |
++--------------------+-----------------+
+|                  1 | Friend          |
+|                  1 | Family          |
+|                  2 | colleague       |
++--------------------+-----------------+
+3 rows in set (0.0009 sec)
+ MySQL  localhost:33060+ ssl  address_book_service  SQL >
